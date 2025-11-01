@@ -56,11 +56,15 @@ export function useWebSocket() {
               total: data.totalCount
             })
             break
+          case 'NEXT_PROMPT':
+          case 'ROUND_STARTED':
+            // Reset submission status when moving to next prompt or starting round
+            setSubmissionStatus(null)
+            setMessages(prev => [...prev, data])
+            break
           case 'GAME_CREATED':
           case 'JOINED_GAME':
           case 'RECONNECTED':
-          case 'ROUND_STARTED':
-          case 'NEXT_PROMPT':
           case 'ROUND_COMPLETE':
           case 'PLAYER_KICKED':
           case 'PACK_UPDATED':

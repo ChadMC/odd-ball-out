@@ -363,6 +363,75 @@
   text-align: left;
 }
 
+.answers-review {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 25px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.prompt-section {
+  margin-bottom: 25px;
+}
+
+.prompt-section:last-child {
+  margin-bottom: 0;
+}
+
+.prompt-section .question {
+  font-size: 1.2em;
+  margin: 0 0 12px 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.answers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.answer-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  font-size: 0.95em;
+}
+
+.answer-item .avatar {
+  font-size: 1.5em;
+}
+
+.answer-item .name {
+  min-width: 80px;
+  font-weight: 600;
+}
+
+.answer-item .answer {
+  flex: 1;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+  font-style: italic;
+}
+
+.vote-section {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 20px;
+  border-radius: 15px;
+}
+
+.vote-prompt {
+  text-align: center;
+  font-size: 1.5em;
+  margin: 0 0 15px 0;
+}
+
 /* Reveal */
 .phone-reveal {
   max-width: 500px;

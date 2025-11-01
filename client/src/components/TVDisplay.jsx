@@ -202,6 +202,8 @@ function TVDisplay({ gameId: initialGameId }) {
     const players = ws.gameState?.players || []
     const votedCount = ws.submissionStatus?.type === 'VOTE_SUBMITTED' ? ws.submissionStatus.answered : 0
     const totalCount = ws.submissionStatus?.total || players.length
+    const allPrompts = ws.gameState?.allPrompts || []
+    const answers = ws.gameState?.answers || {}
 
     return (
       <div className="tv-voting">
@@ -209,7 +211,27 @@ function TVDisplay({ gameId: initialGameId }) {
         <Timer endTime={ws.gameState.timerEndTime} />
         
         <div className="voting-instructions">
-          <p>Discuss and vote on your phone!</p>
+          <p>Review the answers and vote on your phone!</p>
+        </div>
+
+        <div className="answers-review">
+          {allPrompts.map((prompt, idx) => (
+            <div key={idx} className="prompt-answer-section">
+              <h3 className="question-text">Q{idx + 1}: {prompt.question}</h3>
+              <div className="player-answers">
+                {players.map(player => {
+                  const answer = answers[idx]?.[player.id] || '(no answer)'
+                  return (
+                    <div key={player.id} className="player-answer-item">
+                      <span className="player-avatar">{player.avatar}</span>
+                      <span className="player-name">{player.name}</span>
+                      <span className="player-answer">{answer}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
         </div>
 
         <div className="submission-status">
@@ -220,15 +242,6 @@ function TVDisplay({ gameId: initialGameId }) {
               style={{ width: `${(votedCount / totalCount) * 100}%` }}
             />
           </div>
-        </div>
-
-        <div className="players-voting">
-          {players.map(player => (
-            <div key={player.id} className="player-vote-card">
-              <span className="player-avatar-large">{player.avatar}</span>
-              <span className="player-name-large">{player.name}</span>
-            </div>
-          ))}
         </div>
       </div>
     )
