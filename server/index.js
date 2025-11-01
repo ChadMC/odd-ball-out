@@ -409,6 +409,12 @@ function handleMessage(clientId, ws, message) {
       
       answerGame.submitAnswer(clientId, data.answer);
       
+      // Send confirmation to the player who submitted
+      sendToPlayer(clientId, {
+        type: 'ANSWER_ACCEPTED',
+        promptIndex: answerGame.currentPromptIndex
+      });
+      
       // Broadcast answer submission status to host (TV)
       const answersForPrompt = answerGame.answers.get(answerGame.currentPromptIndex);
       sendToPlayer(answerGame.hostId, {
@@ -456,6 +462,11 @@ function handleMessage(clientId, ws, message) {
       if (!voteGame) return;
       
       voteGame.submitVote(clientId, data.votedForId);
+      
+      // Send confirmation to the player who voted
+      sendToPlayer(clientId, {
+        type: 'VOTE_ACCEPTED'
+      });
       
       // Broadcast vote submission status to host (TV)
       sendToPlayer(voteGame.hostId, {

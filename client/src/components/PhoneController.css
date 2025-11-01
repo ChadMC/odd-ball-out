@@ -306,6 +306,44 @@
   border-radius: 10px;
 }
 
+.submission-confirmation {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 40px 25px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.confirmation-icon {
+  font-size: 5em;
+  color: #4ade80;
+  margin-bottom: 20px;
+  animation: scaleIn 0.5s ease;
+}
+
+.submission-confirmation h2 {
+  margin: 0 0 15px 0;
+  font-size: 1.8em;
+}
+
+.submission-confirmation p {
+  margin: 0;
+  font-size: 1.2em;
+  opacity: 0.9;
+  animation: pulse 2s infinite;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 /* Voting */
 .phone-voting {
   max-width: 500px;
