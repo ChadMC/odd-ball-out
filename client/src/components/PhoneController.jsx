@@ -9,6 +9,8 @@ function PhoneController({ gameId: initialGameId }) {
   const [selectedAvatar, setSelectedAvatar] = useState('')
   const [avatars, setAvatars] = useState([])
   const [answer, setAnswer] = useState('')
+  const [hasSubmittedAnswer, setHasSubmittedAnswer] = useState(false)
+  const [hasSubmittedVote, setHasSubmittedVote] = useState(false)
   const ws = useWebSocket()
 
   useEffect(() => {
@@ -41,6 +43,22 @@ function PhoneController({ gameId: initialGameId }) {
       }
     } else if (lastMessage?.type === 'ERROR') {
       alert(lastMessage.message)
+      ws.clearMessages()
+    } else if (lastMessage?.type === 'ANSWER_ACCEPTED') {
+      setHasSubmittedAnswer(true)
+      ws.clearMessages()
+    } else if (lastMessage?.type === 'VOTE_ACCEPTED') {
+      setHasSubmittedVote(true)
+      ws.clearMessages()
+    } else if (lastMessage?.type === 'NEXT_PROMPT' || lastMessage?.type === 'ROUND_STARTED') {
+      // Reset submission state when moving to next prompt or new round
+      setHasSubmittedAnswer(false)
+      setHasSubmittedVote(false)
+      ws.clearMessages()
+    } else if (lastMessage?.type === 'VOTING_STARTED') {
+      // Reset answer submission state when voting starts
+      setHasSubmittedAnswer(false)
+      setHasSubmittedVote(false)
       ws.clearMessages()
     }
   }, [ws.messages])
@@ -187,56 +205,64 @@ function PhoneController({ gameId: initialGameId }) {
           </div>
         </div>
 
-        <div className="prompt-section">
-          <h3 className="prompt-question">{prompt?.question}</h3>
-          
-          {prompt?.type === 'text' && (
-            <div className="text-input-section">
-              <textarea
-                value={answer}
-                onChange={(e) => setAnswer(e.target.value)}
-                placeholder="Type your answer..."
-                maxLength={100}
-                rows={3}
-              />
-              <button 
-                onClick={handleSubmitAnswer}
-                disabled={!answer.trim()}
-                className="btn btn-primary"
-              >
-                Submit Answer ✓
-              </button>
-            </div>
-          )}
-
-          {prompt?.type === 'emoji' && (
-            <div className="emoji-buttons">
-              {prompt.options.map((emoji, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleEmojiAnswer(emoji)}
-                  className="btn-emoji"
+        {hasSubmittedAnswer ? (
+          <div className="submission-confirmation">
+            <div className="confirmation-icon">✓</div>
+            <h2>Answer Submitted!</h2>
+            <p>Waiting for other players...</p>
+          </div>
+        ) : (
+          <div className="prompt-section">
+            <h3 className="prompt-question">{prompt?.question}</h3>
+            
+            {prompt?.type === 'text' && (
+              <div className="text-input-section">
+                <textarea
+                  value={answer}
+                  onChange={(e) => setAnswer(e.target.value)}
+                  placeholder="Type your answer..."
+                  maxLength={100}
+                  rows={3}
+                />
+                <button 
+                  onClick={handleSubmitAnswer}
+                  disabled={!answer.trim()}
+                  className="btn btn-primary"
                 >
-                  {emoji}
+                  Submit Answer ✓
                 </button>
-              ))}
-            </div>
-          )}
+              </div>
+            )}
 
-          {prompt?.type === 'multiple_choice' && (
-            <div className="choice-buttons">
-              {prompt.options.map((option, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleEmojiAnswer(option)}
-                  className="btn btn-choice"
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+            {prompt?.type === 'emoji' && (
+              <div className="emoji-buttons">
+                {prompt.options.map((emoji, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleEmojiAnswer(emoji)}
+                    className="btn-emoji"
+                  >
+                    {emoji}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {prompt?.type === 'multiple_choice' && (
+              <div className="choice-buttons">
+                {prompt.options.map((option, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handleEmojiAnswer(option)}
+                    className="btn btn-choice"
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="round-info">
           Round {ws.gameState.currentRound}/{ws.gameState.maxRounds} • 
@@ -277,23 +303,31 @@ function PhoneController({ gameId: initialGameId }) {
           ))}
         </div>
 
-        <div className="vote-section">
-          <h2 className="vote-prompt">Cast Your Vote:</h2>
-          <div className="vote-options">
-            {players
-              .filter(p => p.id !== myId)
-              .map(player => (
-                <button
-                  key={player.id}
-                  onClick={() => handleVote(player.id)}
-                  className="vote-button"
-                >
-                  <span className="avatar">{player.avatar}</span>
-                  <span className="name">{player.name}</span>
-                </button>
-              ))}
+        {hasSubmittedVote ? (
+          <div className="submission-confirmation">
+            <div className="confirmation-icon">✓</div>
+            <h2>Vote Submitted!</h2>
+            <p>Waiting for other players...</p>
           </div>
-        </div>
+        ) : (
+          <div className="vote-section">
+            <h2 className="vote-prompt">Cast Your Vote:</h2>
+            <div className="vote-options">
+              {players
+                .filter(p => p.id !== myId)
+                .map(player => (
+                  <button
+                    key={player.id}
+                    onClick={() => handleVote(player.id)}
+                    className="vote-button"
+                  >
+                    <span className="avatar">{player.avatar}</span>
+                    <span className="name">{player.name}</span>
+                  </button>
+                ))}
+            </div>
+          </div>
+        )}
       </div>
     )
   }

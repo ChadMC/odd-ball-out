@@ -56,6 +56,11 @@ export function useWebSocket() {
               total: data.totalCount
             })
             break
+          case 'ANSWER_ACCEPTED':
+          case 'VOTE_ACCEPTED':
+            // Player's submission was accepted - add to messages for UI to handle
+            setMessages(prev => [...prev, data])
+            break
           case 'NEXT_PROMPT':
           case 'ROUND_STARTED':
             // Reset submission status when moving to next prompt or starting round
