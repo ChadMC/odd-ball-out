@@ -311,6 +311,37 @@
   font-size: 1.2em;
 }
 
+.submission-status {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 20px 40px;
+  border-radius: 15px;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.submission-status h3 {
+  margin: 0 0 15px 0;
+  font-size: 1.8em;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 30px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%);
+  transition: width 0.5s ease;
+}
+
+.round-complete-controls {
+  margin-top: 30px;
+}
+
 /* Voting */
 .tv-voting {
   max-width: 1200px;

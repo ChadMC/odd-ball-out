@@ -7,6 +7,7 @@ export function useWebSocket() {
   const [clientId, setClientId] = useState(null)
   const [gameState, setGameState] = useState(null)
   const [messages, setMessages] = useState([])
+  const [submissionStatus, setSubmissionStatus] = useState(null)
   const ws = useRef(null)
   const reconnectToken = useRef(localStorage.getItem('reconnectToken'))
 
@@ -37,15 +38,30 @@ export function useWebSocket() {
           case 'GAME_STATE':
             setGameState(data.state)
             break
+          case 'VOTING_STARTED':
+          case 'REVEAL':
+          case 'GAME_OVER':
+            // These messages include updated state
+            if (data.state) {
+              setGameState(data.state)
+            }
+            setMessages(prev => [...prev, data])
+            break
+          case 'ANSWER_SUBMITTED':
+          case 'VOTE_SUBMITTED':
+            // Update submission status for TV display
+            setSubmissionStatus({
+              type: data.type,
+              answered: data.answeredCount || data.votedCount,
+              total: data.totalCount
+            })
+            break
           case 'GAME_CREATED':
           case 'JOINED_GAME':
           case 'RECONNECTED':
           case 'ROUND_STARTED':
           case 'NEXT_PROMPT':
-          case 'VOTING_STARTED':
-          case 'REVEAL':
           case 'ROUND_COMPLETE':
-          case 'GAME_OVER':
           case 'PLAYER_KICKED':
           case 'PACK_UPDATED':
           case 'ERROR':
@@ -144,6 +160,7 @@ export function useWebSocket() {
     clientId,
     gameState,
     messages,
+    submissionStatus,
     createGame,
     joinGame,
     startRound,
