@@ -523,8 +523,14 @@ function broadcastToGame(gameId, message) {
   const game = games.get(gameId);
   if (!game) return;
 
+  // Send to all players
   for (const playerId of game.players.keys()) {
     sendToPlayer(playerId, message);
+  }
+  
+  // Also send to host if host is not in the players list
+  if (!game.players.has(game.hostId)) {
+    sendToPlayer(game.hostId, message);
   }
 }
 
