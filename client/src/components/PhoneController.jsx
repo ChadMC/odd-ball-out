@@ -249,25 +249,50 @@ function PhoneController({ gameId: initialGameId }) {
   const renderVoting = () => {
     const players = ws.gameState?.players || []
     const myId = ws.clientId
+    const allPrompts = ws.gameState?.allPrompts || []
+    const answers = ws.gameState?.answers || {}
 
     return (
       <div className="phone-voting">
         <h1 className="voting-title">🗳️ Vote!</h1>
         <p className="voting-instruction">Who is the Odd One Out?</p>
 
-        <div className="vote-options">
-          {players
-            .filter(p => p.id !== myId)
-            .map(player => (
-              <button
-                key={player.id}
-                onClick={() => handleVote(player.id)}
-                className="vote-button"
-              >
-                <span className="avatar">{player.avatar}</span>
-                <span className="name">{player.name}</span>
-              </button>
-            ))}
+        <div className="answers-review">
+          {allPrompts.map((prompt, idx) => (
+            <div key={idx} className="prompt-section">
+              <h3 className="question">Q{idx + 1}: {prompt.question}</h3>
+              <div className="answers-list">
+                {players.map(player => {
+                  const answer = answers[idx]?.[player.id] || '(no answer)'
+                  return (
+                    <div key={player.id} className="answer-item">
+                      <span className="avatar">{player.avatar}</span>
+                      <span className="name">{player.name}:</span>
+                      <span className="answer">{answer}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="vote-section">
+          <h2 className="vote-prompt">Cast Your Vote:</h2>
+          <div className="vote-options">
+            {players
+              .filter(p => p.id !== myId)
+              .map(player => (
+                <button
+                  key={player.id}
+                  onClick={() => handleVote(player.id)}
+                  className="vote-button"
+                >
+                  <span className="avatar">{player.avatar}</span>
+                  <span className="name">{player.name}</span>
+                </button>
+              ))}
+          </div>
         </div>
       </div>
     )

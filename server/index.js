@@ -245,13 +245,18 @@ class Game {
         state.isOdd = isOdd;
       }
 
-      if (this.state === 'REVEAL') {
-        state.oddPlayerId = this.oddPlayerId;
-        state.votes = Object.fromEntries(this.votes);
+      if (this.state === 'VOTING' || this.state === 'REVEAL') {
+        // Include all prompts and answers for voting and reveal phases
+        state.allPrompts = this.prompts;
         state.answers = {};
         for (const [promptIdx, promptAnswers] of this.answers.entries()) {
           state.answers[promptIdx] = Object.fromEntries(promptAnswers);
         }
+      }
+
+      if (this.state === 'REVEAL') {
+        state.oddPlayerId = this.oddPlayerId;
+        state.votes = Object.fromEntries(this.votes);
       }
     }
 
