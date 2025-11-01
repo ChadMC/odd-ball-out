@@ -382,13 +382,19 @@ function handleMessage(clientId, ws, message) {
           type: 'ROUND_STARTED'
         });
         
-        // Send individual clues
+        // Send individual clues to players
         for (const [playerId] of startGame.players) {
           sendToPlayer(playerId, {
             type: 'GAME_STATE',
             state: startGame.getGameState(playerId)
           });
         }
+        
+        // Send general game state to host (TV)
+        sendToPlayer(startGame.hostId, {
+          type: 'GAME_STATE',
+          state: startGame.getGameState()
+        });
       }
       break;
 
@@ -397,6 +403,14 @@ function handleMessage(clientId, ws, message) {
       if (!answerGame) return;
       
       answerGame.submitAnswer(clientId, data.answer);
+      
+      // Broadcast answer submission status to host (TV)
+      const answersForPrompt = answerGame.answers.get(answerGame.currentPromptIndex);
+      sendToPlayer(answerGame.hostId, {
+        type: 'ANSWER_SUBMITTED',
+        answeredCount: answersForPrompt ? answersForPrompt.size : 0,
+        totalCount: answerGame.players.size
+      });
       
       // Check if all players answered
       const promptAnswers = answerGame.answers.get(answerGame.currentPromptIndex);
@@ -408,12 +422,19 @@ function handleMessage(clientId, ws, message) {
               type: 'NEXT_PROMPT'
             });
             
+            // Send individual clues to players
             for (const [playerId] of answerGame.players) {
               sendToPlayer(playerId, {
                 type: 'GAME_STATE',
                 state: answerGame.getGameState(playerId)
               });
             }
+            
+            // Send general game state to host (TV)
+            sendToPlayer(answerGame.hostId, {
+              type: 'GAME_STATE',
+              state: answerGame.getGameState()
+            });
           } else {
             answerGame.startTimer(30); // 30 seconds for voting
             broadcastToGame(answerGame.id, {
@@ -430,6 +451,13 @@ function handleMessage(clientId, ws, message) {
       if (!voteGame) return;
       
       voteGame.submitVote(clientId, data.votedForId);
+      
+      // Broadcast vote submission status to host (TV)
+      sendToPlayer(voteGame.hostId, {
+        type: 'VOTE_SUBMITTED',
+        votedCount: voteGame.votes.size,
+        totalCount: voteGame.players.size
+      });
       
       // Check if all players voted
       if (voteGame.votes.size === voteGame.players.size) {

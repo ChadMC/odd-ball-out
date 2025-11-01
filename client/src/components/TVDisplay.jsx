@@ -148,6 +148,8 @@ function TVDisplay({ gameId: initialGameId }) {
   const renderPlaying = () => {
     const prompt = ws.gameState?.currentPrompt
     const players = ws.gameState?.players || []
+    const answeredCount = ws.submissionStatus?.type === 'ANSWER_SUBMITTED' ? ws.submissionStatus.answered : 0
+    const totalCount = ws.submissionStatus?.total || players.length
 
     return (
       <div className="tv-playing">
@@ -174,6 +176,16 @@ function TVDisplay({ gameId: initialGameId }) {
           )}
         </div>
 
+        <div className="submission-status">
+          <h3>Answers Submitted: {answeredCount}/{totalCount}</h3>
+          <div className="progress-bar">
+            <div 
+              className="progress-fill" 
+              style={{ width: `${(answeredCount / totalCount) * 100}%` }}
+            />
+          </div>
+        </div>
+
         <div className="players-status">
           {players.map(player => (
             <div key={player.id} className="player-status">
@@ -188,6 +200,8 @@ function TVDisplay({ gameId: initialGameId }) {
 
   const renderVoting = () => {
     const players = ws.gameState?.players || []
+    const votedCount = ws.submissionStatus?.type === 'VOTE_SUBMITTED' ? ws.submissionStatus.answered : 0
+    const totalCount = ws.submissionStatus?.total || players.length
 
     return (
       <div className="tv-voting">
@@ -196,6 +210,16 @@ function TVDisplay({ gameId: initialGameId }) {
         
         <div className="voting-instructions">
           <p>Discuss and vote on your phone!</p>
+        </div>
+
+        <div className="submission-status">
+          <h3>Votes Cast: {votedCount}/{totalCount}</h3>
+          <div className="progress-bar">
+            <div 
+              className="progress-fill" 
+              style={{ width: `${(votedCount / totalCount) * 100}%` }}
+            />
+          </div>
         </div>
 
         <div className="players-voting">
@@ -214,6 +238,10 @@ function TVDisplay({ gameId: initialGameId }) {
     const players = ws.gameState?.players || []
     const oddPlayer = players.find(p => p.id === ws.gameState.oddPlayerId)
     const votes = ws.gameState?.votes || {}
+    
+    // Check if round is complete (not game over)
+    const lastMessage = ws.messages[ws.messages.length - 1]
+    const isRoundComplete = lastMessage?.type === 'ROUND_COMPLETE'
 
     return (
       <div className="tv-reveal">
@@ -239,6 +267,17 @@ function TVDisplay({ gameId: initialGameId }) {
         </div>
 
         <Scoreboard players={players} />
+        
+        {isRoundComplete && (
+          <div className="round-complete-controls">
+            <button 
+              onClick={handleStartRound}
+              className="btn btn-primary btn-large"
+            >
+              ▶️ Start Next Round
+            </button>
+          </div>
+        )}
       </div>
     )
   }
