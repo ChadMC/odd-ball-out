@@ -13,7 +13,8 @@ function PhoneController({ gameId: initialGameId }) {
 
   useEffect(() => {
     // Fetch available avatars
-    fetch('http://localhost:3001/api/avatars')
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+    fetch(`${apiUrl}/api/avatars`)
       .then(res => res.json())
       .then(data => {
         setAvatars(data)

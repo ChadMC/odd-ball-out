@@ -8,7 +8,7 @@ export function useWebSocket() {
   const [gameState, setGameState] = useState(null)
   const [messages, setMessages] = useState([])
   const ws = useRef(null)
-  const reconnectToken = useRef(null)
+  const reconnectToken = useRef(localStorage.getItem('reconnectToken'))
 
   const connect = useCallback(() => {
     if (ws.current?.readyState === WebSocket.OPEN) return

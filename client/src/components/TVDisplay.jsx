@@ -30,7 +30,8 @@ function TVDisplay({ gameId: initialGameId }) {
       ws.getGameState(gameId)
       
       // Fetch available packs
-      fetch('http://localhost:3001/api/packs')
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+      fetch(`${apiUrl}/api/packs`)
         .then(res => res.json())
         .then(data => setPacks(data))
         .catch(err => console.error('Failed to fetch packs:', err))

@@ -1,6 +1,6 @@
 import express from 'express';
 import { createServer } from 'http';
-import { WebSocketServer } from 'ws';
+import { WebSocketServer, WebSocket } from 'ws';
 import cors from 'cors';
 import QRCode from 'qrcode';
 import { Filter } from 'bad-words';
@@ -530,7 +530,7 @@ function broadcastToGame(gameId, message) {
 
 function sendToPlayer(playerId, message) {
   const ws = playerConnections.get(playerId);
-  if (ws && ws.readyState === ws.OPEN) {
+  if (ws && ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify(message));
   }
 }
